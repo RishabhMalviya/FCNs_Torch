@@ -9,9 +9,9 @@ As of now, only the original (non FCN) architectures of two nets are available: 
 ---
 
 ### TODO
-1. Make sure the cuddn version of AlexNet trains properly on GPU.
+1. Make sure the cuddn version of AlexNet trains properly on GPU. [This](https://gist.github.com/Kaixhin/68ffc5a2d1a69cc1556f1b2d2f1ae345) example should help. I can't test this on my laptop, because I've only got a Fermi micro-architecture GPU (aka 'compute cpapbility 2.0'), and CuDNN needs at least compute capability 3.0. I'll write out the (hopefully correct code) for the network architecture, and anyone with a compatible GPU is welcome to check if it's fine.
 2. Write the lua file to return the net for FCN-8_VGG-16 and FCN-32_AlexNet (may need to go through .prototxt files manually).
 3. Download the data (PASCAL VOC 12 dataset).
-4. find out what loss function they use for the FCNs.
-5. train
-6. test, report results (what is mean IU?).
+4. Find out what loss function they use for the FCNs.
+5. Train
+6. Test, report results (what is mean IU?).
