@@ -27,5 +27,12 @@ function helper.computeOutputDims(W,H,kw,kh,dw,dh,pw,ph)
     return outW, outH
 end
 
+function helper.computeOutputDims_Deconvolution(W,H,kw,kh,dw,dh,pw,ph)
+    outW = (W - 1)*dw - 2*pw + kw
+    outH = (H - 1)*dh - 2*ph + kh
+    
+    return outW, outH
+end
+
 
 return helper
