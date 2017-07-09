@@ -26,13 +26,13 @@ function helper.computeOutputDims(W,H,kw,kh,dw,dh,pw,ph,ceil)
     outW = (W + 2*pw - kw)/dw + 1
     outH = (H + 2*ph - kh)/dh + 1
 
-    if((W + 2*pw - kw)%dw > pw or ceil) then
+    if(ceil) then
         outW = math.ceil(outW)
     else
         outW = math.floor(outW)
     end
 
-    if((H + 2*ph - kh)%dh > ph or ceil) then
+    if(ceil) then
         outH = math.ceil(outH)
     else
         outH = math.floor(outH)
