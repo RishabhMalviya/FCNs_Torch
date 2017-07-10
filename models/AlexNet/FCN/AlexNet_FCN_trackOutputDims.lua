@@ -45,7 +45,7 @@ group = 1
 outC = 96
 net:add(nn.SpatialMaxPooling(kw, kh, dw, dh, pw, ph):ceil())
 net:add(nn.SpatialCrossMapLRN(5, 0.000100, 0.7500, 1.000000))
-W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph)
+W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph, true)
 inC = outC
 print('outW: ' .. W)
 print('outH: ' .. H)
@@ -67,8 +67,8 @@ print('outW: ' .. W)
 print('outH: ' .. H)
 print('outC: ' .. outC .. '\n')
 
-kw = 3 
-kh = 3
+kw = 4 
+kh = 4
 dw = 2
 dh = 2
 pw = 0
@@ -77,7 +77,7 @@ group = 1
 outC = 256
 net:add(nn.SpatialMaxPooling(kw, kh, dw, dh, pw, ph):ceil())
 net:add(nn.SpatialCrossMapLRN(5, 0.000100, 0.7500, 1.000000))
-W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph)
+W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph, true)
 inC = outC
 print('outW: ' .. W)
 print('outH: ' .. H)
@@ -140,7 +140,7 @@ ph = 0
 group = 1
 outC = 256
 net:add(nn.SpatialMaxPooling(kw, kh, dw, dh, pw, ph):ceil())
-W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph)
+W, H = helper.computeOutputDims(W, H, kw, kh, dw, dh, pw, ph, true)
 inC = outC
 print('outW: ' .. W)
 print('outH: ' .. H)
@@ -199,15 +199,14 @@ kw = 64
 kh = 64
 dw = 32
 dh = 32
-pw = 6
-ph = 6
+pw = 22
+ph = 22
 group = 1
 outC = 21
 net:add(nn.SpatialFullConvolution(inC, outC, kw, kh, dw, dh, pw, ph))
+net:add(nn.SpatialLogSoftMax())
 W, H = helper.computeOutputDims_Deconvolution(W, H, kw, kh, dw, dw, pw, ph)
 inC = outC
 print('outW: ' .. W)
 print('outH: ' .. H)
 print('outC: ' .. outC .. '\n')
-
-return

@@ -3,12 +3,6 @@ require 'cudnn'
 
 local net = nn.Sequential()
 
--- Keeping track of output dimensions
-local outW = 500
-local outH = 500
-
--- Keeping track of convolution parameters
-
 net:add(cudnn.SpatialConvolution(3, 96, 11, 11, 4, 4, 0, 0, 1))
 net:add(cudnn.ReLU(true))
 net:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 0, 0):ceil())
