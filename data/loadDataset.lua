@@ -3,7 +3,7 @@ require 'image'
 
 trainData = {data = {}, labels = {}}
 -- Find the trainSet file
-local trainImages = io.open("./VOCdevkit/VOC2012/ImageSets/Segmentation/codeTesting.txt")
+local trainImages = io.open("./VOCdevkit/VOC2012/ImageSets/Segmentation/trainval.txt")
 -- Load each image listed in the train.txt file
 imageNumber = 1
 if trainImages then
@@ -31,8 +31,8 @@ for line in Rmap:lines() do
         labelColorMap.color[lineNumber][1] = tonumber(line)
     end
     if(lineNumber==255) then
-        labelColorMap.label[21] = lineNumber
-        labelColorMap.color[21][1] = tonumber(line)
+        labelColorMap.label[22] = lineNumber
+        labelColorMap.color[22][1] = tonumber(line)
     end
     lineNumber = lineNumber+1
 end
@@ -44,7 +44,7 @@ for line in Gmap:lines() do
         labelColorMap.color[lineNumber][2] = tonumber(line)
     end
     if(lineNumber==255) then
-        labelColorMap.color[21][2] = tonumber(line)
+        labelColorMap.color[22][2] = tonumber(line)
     end
     lineNumber = lineNumber+1
 end
@@ -56,17 +56,17 @@ for line in Bmap:lines() do
         labelColorMap.color[lineNumber][3] = tonumber(line)
     end
     if(lineNumber==255) then
-        labelColorMap.color[21][3] = tonumber(line)
+        labelColorMap.color[22][3] = tonumber(line)
     end
     lineNumber = lineNumber+1
 end
-
-labelColorMap.color[22] = torch.Tensor(3):fill(0)
-labelColorMap.label[22] = 21
+-- background label
+labelColorMap.color[21] = torch.Tensor(3):fill(0)
+labelColorMap.label[21] = 21
 
 -- Load each labels image listed in the train.txt file
 -- Locate the labelled images, load them
-local trainImages = io.open("./VOCdevkit/VOC2012/ImageSets/Segmentation/codeTesting.txt")
+local trainImages = io.open("./VOCdevkit/VOC2012/ImageSets/Segmentation/trainval.txt")
 imageNumber = 1
 if trainImages then
     for line in trainImages:lines() do
@@ -82,17 +82,17 @@ for t = 1,#trainData.labels do
   for x = 1,tIm:size()[2] do
     for y = 1,tIm:size()[3] do
       for c = 1,22 do
-        if((labelColorMap.color[c][1]==tIm[1][x][y]) and (labelColorMap.color[c][2]==tIm[2][x][y]) and (labelColorMap.color[c][3]==tIm[3][x][y])) then
+        if((math.abs(labelColorMap.color[c][1]-tIm[1][x][y])<0.0001) and (math.abs(labelColorMap.color[c][2]-tIm[2][x][y])<0.0001) and (math.abs(labelColorMap.color[c][3]-tIm[3][x][y])<0.0001)) then
           trainData.labels[t][1][x][y] = labelColorMap.label[c]
         end
       end
     end
   end
 end
--- Pad them with 21s so that it's all 500x500
+-- Pad them with the ignoreIndex so that it's all 500x500
 for i = 1,#trainData.labels do
     local tempImage = trainData.labels[i]
-    trainData.labels[i] = torch.Tensor(1,500,500):fill(21)
+    trainData.labels[i] = torch.Tensor(1,500,500):fill(255) --ignoreIndex
     trainData.labels[i][{ {}, {1,tempImage:size()[2]}, {1,tempImage:size()[3]} }] = tempImage
 end
 
