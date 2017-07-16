@@ -4,23 +4,13 @@ require 'optim'
 -- Criterion
 criterion = nn.ClassNLLCriterion();
 criterion.sizeAverage = false
-criterion.ignoreIndex = 255
+criterion.ignoreIndex = 22
 criterion:cuda()
 
 -- Network
 net = dofile('./FCN/AlexNet_FCN_nn.lua')
 net:cuda()
 params, gradParams = net:getParameters();
-
--- Training data (conversion to CudaTensors is done online for each minibatch )
-trainData, testData, numClasses = dofile('../../data/loadDataset.lua')
-shuffledIndices = torch.randperm(trainData.data:size()[1], 'torch.LongTensor')
-trainData.data = trainData.data:cuda()
-trainData.labels = trainData.labels:cuda()
-
--- Allocating GPU memory
-output = torch.CudaTensor(numClasses, trainData.labels[1]:size()[1], trainData.labels[1]:size()[2]):fill(0)
-gradOutput = torch.CudaTensor(output:size()):fill(0)
 
 -- Optimizer configuration
 config = {
@@ -29,6 +19,13 @@ config = {
   momentum = 0.99
 }
 maxIteration = 25
+
+-- Allocating re-used GPU memory
+numClasses = 21
+inputWidth = 500
+inputHeight = 500
+output = torch.CudaTensor(numClasses, inputWidth, inputHeight):fill(0)
+gradOutput = torch.CudaTensor(output:size()):fill(0)
 
 
 -- Begin training
@@ -41,19 +38,29 @@ while true do
 
   print('Epoch: ' .. iteration)
 
-  for t = 1,trainData:size()[1] do
+for slice = 0,9 do
+-- Loading new data slice
+print('Loading data slice ' .. i)
+trainData = torch.load('../../data/trainvalFinal/trainvalFinal' .. i .. '.t7')
+print('Done leading data slice ' .. i .. '\n')
+        
+print('Shuffling indices \n')
+numExamples = #trainData.data
+shuffledIndices = torch.randperm(numExamples, 'torch.LongTensor')
+
+  for t = 1,numExamples do
     gradParams:zero();
     output:fill(0)
     gradOutput:fill(0)
 
     function feval(params)
-      local input = trainData.data[shuffledIndices[t]];
-      local target = trainData.labels[shuffledIndices[t]];
+      local input = trainData.data[shuffledIndices[t]]:cuda();
+      local target = trainData.labels[shuffledIndices[t]]:cuda();
 
       output = net:forward(input)
 
-      for i = 1,output:size()[2] do
-        for j = 1,output:size()[3] do
+      for i = 1,output:size(2) do
+        for j = 1,output:size(3) do
           criterion.output:fill(0)
           criterion.gradInput:fill(0)
 
@@ -73,10 +80,24 @@ while true do
     optim.sgd(feval, params, config)
   end
 
+  net:clearState()
+  torch.save('../../data/AlexNet/AlexNetFCN' .. iteration .. '.t7', net)
+
   currentError = currentError / dataset:size()
   print('Current average error: ' .. currentError)
 
+-- Freeing GPU memory
+--output = nil
+--gradOutput = nil
+trainData.data = nil
+trainData.labels = nil
+collectgarbage()
+
+end
+
   iteration = iteration + 1
+
+  
 
   if maxIteration > 0 and iteration > maxIteration then
     print("# StochasticGradient: you have reached the maximum number of iterations")

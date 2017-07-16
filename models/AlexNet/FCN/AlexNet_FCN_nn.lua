@@ -1,5 +1,5 @@
 require 'nn'
-local helper =  dofile('../helperFunctions.lua')
+local helper =  dofile('./helperFunctions.lua')
 
 local net = nn.Sequential()
 
