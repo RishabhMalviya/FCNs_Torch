@@ -1,3 +1,5 @@
+--- I have recently Implemented this in PyTorch successfully), and will soon be putting up that code ---
+
 # FCNs Torch
 An implementation of the paper [Fully Convolutional Neural Networks for Image Segmentation](./papers/FCN.pdf) in Torch.
 
