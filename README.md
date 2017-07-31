@@ -1,4 +1,4 @@
---- I have recently Implemented this in PyTorch successfully), and will soon be putting up that code ---
+--- I have implemented this successfully in PyTorch, and will soon be putting up that code. This repo is basically deprecated.  ---
 
 # FCNs Torch
 An implementation of the paper [Fully Convolutional Neural Networks for Image Segmentation](./papers/FCN.pdf) in Torch.
